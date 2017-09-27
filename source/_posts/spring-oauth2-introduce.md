@@ -1,6 +1,11 @@
 ---
 title: Spring Oauth2 入门
 date: 2016-02-28 21:55
+categories:
+- spring
+tags:
+- spring
+- oauth2
 ---
 
 如果我们的客户端需要对用户 Github 进行一些操作，比如读取用户项目列表、上传 SSH Key 等，需要先获得 Gtihub 的授权。而 Github 使用 Oauth 2 进行授权。

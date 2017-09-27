@@ -1,6 +1,11 @@
 ---
 title: Java 项目优化实战
 date: 2016-03-27 21:55
+categories:
+- java
+tags:
+- java
+- optimize
 ---
 
 ## 1 Visual VM

@@ -1,6 +1,11 @@
 ---
 title: Git 客户端在 WebIDE 中的实现
 date: 2016-05-03 10:12
+categories:
+- git
+tags:
+- git
+- java
 ---
 
 # Git 客户端在 WebIDE 中的实现

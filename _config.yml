@@ -86,4 +86,15 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+- type: git
+  repo: git@git.coding.net:tanhe123/tanhe123.git
+  branch: coding-pages
+- type: git
+  repo: git@github.com:tanhe123/blog.git
+  branch: gh-pages
+
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000

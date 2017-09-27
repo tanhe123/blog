@@ -1,6 +1,11 @@
 ---
 title: Java 与 Unicode
 date: 2016-03-15 21:55
+categories:
+- java
+tags:
+- java
+- unicode
 ---
 
 优化项目时，遇到了 Unicode 一些相关的问题，为此，需要了解 Java 中是如何支持 Unicode。以下是整理的笔记。

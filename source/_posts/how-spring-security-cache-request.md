@@ -1,6 +1,10 @@
 ---
 title: 探究 Spring Security 缓存请求
 date: 2015-12-07 22:58:00
+categories:
+- spring
+tags:
+- spring security
 ---
 
 ## 为什么要缓存?

@@ -1,6 +1,10 @@
 ---
 title: 使用原理视角看 Git
 date: 2016-07-05 9:12
+categories:
+- git
+tags:
+- git
 ---
 
 # 1. 开始

@@ -1,6 +1,10 @@
 ---
 title: 动手编写 Mockito
 date: 2016-01-10 22:58
+categories:
+- java
+tags:
+- mockito
 ---
 
 在 WebIDE 团队内部是要求写单元测试的！
