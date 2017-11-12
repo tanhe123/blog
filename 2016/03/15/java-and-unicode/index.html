@@ -373,17 +373,6 @@
 
           
           
-             <span id="/2016/03/15/java-and-unicode/" class="leancloud_visitors" data-flag-title="Java 与 Unicode">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
 
           
 
@@ -405,7 +394,7 @@
 
       
         <p>优化项目时，遇到了 Unicode 一些相关的问题，为此，需要了解 Java 中是如何支持 Unicode。以下是整理的笔记。</p>
-<img src="/2016/03/15/java-and-unicode/bg2016031503.jpg" alt="Java And Unicode" title="Java And Unicode">
+<img src="/2016/03/15/java-and-unicode/bg2016031503.jpg" title="Java And Unicode">
 <h2 id="一、Unicode-是什么？"><a href="#一、Unicode-是什么？" class="headerlink" title="一、Unicode 是什么？"></a>一、Unicode 是什么？</h2><p>Unicode 简单说来就是对世界上大部分的文字系统进行了整理，然后为他们编号。</p>
 <p>目前最新的版本是 2015 年 6 月 17 日公布的 8.0.0，收录了 120737 个字符。</p>
 <a id="more"></a>
@@ -413,10 +402,10 @@
 <p>U+0000 至 U+FFFF 构成的平面称为<strong>基本多文种平面</strong>，英文名称 Basic Multilingual Plane，简称 <strong>BMP</strong>。最常见的字符通常都在该平面内。剩余从 U+10000 至 U+10FFFF 的 16 个平面称为辅助平面。</p>
 <p>在表示一个 Unicode 字符时，通常会用 “U+” 然后紧接着一组十六进制的数字来表示这一个字符。</p>
 <blockquote>
-<p>U+4E2D = 中<br>U+1F466 = <img src="/2016/03/15/java-and-unicode/bg2016031501.png" alt="bg2016031501.png" title=""></p>
+<p>U+4E2D = 中<br>U+1F466 = <img src="/2016/03/15/java-and-unicode/bg2016031501.png"></p>
 </blockquote>
 <p>使用过 emoji 的可能知道，emoji 在不同的平台（比如苹果、安卓）上的表现形式是不同的</p>
-<img src="/2016/03/15/java-and-unicode/bg2016031502.png" alt="emoji" title="emoji">
+<img src="/2016/03/15/java-and-unicode/bg2016031502.png" title="emoji">
 <p>上面的都可以使用 U+1F601 表示，这也说明了 Unicode 的另一个特点，为每一个字符而非字形定义唯一的代码（码点）。</p>
 <h2 id="二、UTF-32、UTF-16、UTF-8"><a href="#二、UTF-32、UTF-16、UTF-8" class="headerlink" title="二、UTF-32、UTF-16、UTF-8"></a>二、UTF-32、UTF-16、UTF-8</h2><p>前面提到的 U+4E2D，最简单的存储方式是使用 32 位二进制，即 4 个字节来表示, 称为 UTF-32（或 UCS-4）。</p>
 <p>假设我们现在使用 UTF-32 对字符进行存储、传输，那么像 A（U+0041）这样的原本仅需要一个字节来表示的字符，现在需要 4 个字节，这就造成了存储空间浪费、传输效率降低。</p>
@@ -472,20 +461,20 @@
 </tbody>
 </table>
 <h2 id="三、Java-对-Unicode-的支持"><a href="#三、Java-对-Unicode-的支持" class="headerlink" title="三、Java 对 Unicode 的支持"></a>三、Java 对 Unicode 的支持</h2><p>Java 使用的是 UTF-16。char 类型的长度为 2 个字节，就代表一个长度为 16 的码元。因此对于基本平面内的字符，一个 char 就可以表示一个字符。</p>
-<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">char</span> ch = <span class="comment">'中';</span></div><div class="line"><span class="built_in">Integer</span>.toHexString(ch); ==&gt; <span class="number">4e2</span>d</div></pre></td></tr></table></figure>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">char</span> ch = <span class="comment">'中';</span></span><br><span class="line"><span class="built_in">Integer</span>.toHexString(ch); ==&gt; <span class="number">4e2</span>d</span><br></pre></td></tr></table></figure>
 <p>这与 “中” 的码点 U+4E2D 是一致的。</p>
 <p>Java 提供了将码点转换为 UTF-16 形式(即用 char 来表示)的函数， java.lang.Character.toChars，该函数声明如下:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">char</span>[] <span class="title">toChars</span>(<span class="params"><span class="keyword">int</span> codePoint</span>)</span>;</div></pre></td></tr></table></figure>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">char</span>[] <span class="title">toChars</span>(<span class="params"><span class="keyword">int</span> codePoint</span>)</span>;</span><br></pre></td></tr></table></figure>
 <p>使用该函数，我们看到辅助平面内的字符需要用两个char来表示：</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Character.toChars(<span class="number">0x4E2D</span>).length ==&gt; <span class="number">1</span></div><div class="line">Character.toChars(<span class="number">0x1F466</span>).length ==&gt; <span class="number">2</span></div></pre></td></tr></table></figure>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Character.toChars(<span class="number">0x4E2D</span>).length ==&gt; <span class="number">1</span></span><br><span class="line">Character.toChars(<span class="number">0x1F466</span>).length ==&gt; <span class="number">2</span></span><br></pre></td></tr></table></figure>
 <p>因此，原来我们统计字符个数的方法就不正确了。</p>
-<figure class="highlight pony"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">new</span> <span class="title">String</span>(<span class="type">Character</span>.toChars(<span class="number">0x1F466</span>)).<span class="title">length</span>() ==&gt;</span> <span class="number">2</span></div></pre></td></tr></table></figure>
+<figure class="highlight pony"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">new</span> <span class="title">String</span>(<span class="type">Character</span>.toChars(<span class="number">0x1F466</span>)).<span class="title">length</span>() ==&gt;</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
 <p>这时，可以使用</p>
-<figure class="highlight dart"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">String</span> s = <span class="keyword">new</span> <span class="built_in">String</span>(Character.toChars(<span class="number">0x1F466</span>));</div><div class="line">s.codePointCount(<span class="number">0</span>, s.length()) ==&gt; <span class="number">1</span></div></pre></td></tr></table></figure>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> s = <span class="keyword">new</span> <span class="built_in">String</span>(Character.toChars(<span class="number">0x1F466</span>));</span><br><span class="line">s.codePointCount(<span class="number">0</span>, s.length()) ==&gt; <span class="number">1</span></span><br></pre></td></tr></table></figure>
 <p>Java 中关于使用 Character.toCodePoint 计算码点，计算方法为:</p>
-<figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">((<span class="name">high</span> &lt;&lt; <span class="number">10</span>) + low) + (<span class="number">0</span>x010000 - ('\uD800' &lt;&lt; <span class="number">10</span>) - '\uDC00')</div></pre></td></tr></table></figure>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((<span class="name">high</span> &lt;&lt; <span class="number">10</span>) + low) + (<span class="number">0</span>x010000 - ('\uD800' &lt;&lt; <span class="number">10</span>) - '\uDC00')</span><br></pre></td></tr></table></figure>
 <p>还有其他的一些处理码点的函数（部分）：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">String<span class="selector-class">.codePointAt</span> 返回指定位置的码点</div><div class="line">String<span class="selector-class">.offsetByCodePoints</span> 从 index 开始，接下来第n个代码点的下标</div><div class="line">String<span class="selector-class">.Character</span><span class="selector-class">.codePointBefore</span> 返回指定位置处前面的一个码点</div><div class="line">Character<span class="selector-class">.isBmpCodePoint</span> 判断一个码点是否为 BMP</div><div class="line">Character<span class="selector-class">.toCodePoint</span> 给定一个代理对，转换为码点</div><div class="line">Character<span class="selector-class">.isSupplementaryCodePoint</span> 判断代码点是否为辅助平面，即是否由两个 char 表示</div><div class="line">Character<span class="selector-class">.charCount</span> 判断给定码点需要几个char表示</div><div class="line">Character<span class="selector-class">.isSurrogatePair</span> 判断两个 char 是否为一个代理对</div><div class="line">Character<span class="selector-class">.isHighSurrogate</span> 判断 char 是否为代理对中的高位</div><div class="line">Character<span class="selector-class">.isLowSurrogate</span> 判断 char 是否为代理对中的低位</div></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">String<span class="selector-class">.codePointAt</span> 返回指定位置的码点</span><br><span class="line">String<span class="selector-class">.offsetByCodePoints</span> 从 index 开始，接下来第n个代码点的下标</span><br><span class="line">String<span class="selector-class">.Character</span><span class="selector-class">.codePointBefore</span> 返回指定位置处前面的一个码点</span><br><span class="line">Character<span class="selector-class">.isBmpCodePoint</span> 判断一个码点是否为 BMP</span><br><span class="line">Character<span class="selector-class">.toCodePoint</span> 给定一个代理对，转换为码点</span><br><span class="line">Character<span class="selector-class">.isSupplementaryCodePoint</span> 判断代码点是否为辅助平面，即是否由两个 char 表示</span><br><span class="line">Character<span class="selector-class">.charCount</span> 判断给定码点需要几个char表示</span><br><span class="line">Character<span class="selector-class">.isSurrogatePair</span> 判断两个 char 是否为一个代理对</span><br><span class="line">Character<span class="selector-class">.isHighSurrogate</span> 判断 char 是否为代理对中的高位</span><br><span class="line">Character<span class="selector-class">.isLowSurrogate</span> 判断 char 是否为代理对中的低位</span><br></pre></td></tr></table></figure>
 <h2 id="四、参考"><a href="#四、参考" class="headerlink" title="四、参考"></a>四、参考</h2><p><a href="https://zh.wikipedia.org/wiki/Unicode" target="_blank" rel="external">https://zh.wikipedia.org/wiki/Unicode</a><br><a href="https://zh.wikipedia.org/wiki/Unicode%E5%AD%97%E7%AC%A6%E5%B9%B3%E9%9D%A2%E6%98%A0%E5%B0%84" target="_blank" rel="external">https://zh.wikipedia.org/wiki/Unicode%E5%AD%97%E7%AC%A6%E5%B9%B3%E9%9D%A2%E6%98%A0%E5%B0%84</a><br><a href="http://apps.timwhitlock.info/emoji/tables/unicode" target="_blank" rel="external">http://apps.timwhitlock.info/emoji/tables/unicode</a><br><a href="http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html</a><br><a href="http://www.ruanyifeng.com/blog/2014/12/unicode.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2014/12/unicode.html</a></p>
 
       
@@ -638,7 +627,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -660,7 +649,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1214,113 +1203,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("jR0BmtRkUJrumxzmaeoBLOFV-gzGzoHsz", "q6Ex3P5JNnqy3tBDMMuRS5T5");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 

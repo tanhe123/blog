@@ -406,17 +406,6 @@
 
           
           
-             <span id="/2016/07/05/git-implement/" class="leancloud_visitors" data-flag-title="使用原理视角看 Git">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
 
           
 
@@ -482,7 +471,7 @@
 <p>这是项目的三个版本，版本1中有两个文件A和B，然后修改了A，变成了A1，形成了版本2，接着又修改了B变为B1，形成了版本3。</p>
 <p>如果我们把项目的每个版本都保存到本地仓库，需要保存至少6个文件，而实际上，只有4个不同的文件，A、A1、B、B1。为了节省存储的空间，我们要像一个方法将同样的文件只需要保存一份。这就引入了Sha-1算法。</p>
 <p>可以使用git命令计算文件的 sha-1 值。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> <span class="string">'test content'</span> | git <span class="built_in">hash</span>-object --stdin</div><div class="line">d670460b4b4aece5915caf5c68d12f560a9fe3e4</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'test content'</span> | git <span class="built_in">hash</span>-object --stdin</span><br><span class="line">d670460b4b4aece5915caf5c68d12f560a9fe3e4</span><br></pre></td></tr></table></figure>
 <p>SHA-1将文件中的内容通过通过计算生成一个 40 位长度的hash值。</p>
 <p>Sha-1的非常有特点：</p>
 <ul>
@@ -523,17 +512,17 @@
 <p>分支的目的是让我们可以并行的进行开发。比如我们当前正在开发功能，但是需要修复一个紧急bug，我们不可能在这个项目正在修改的状态下修复 bug，因为这样会引入更多的bug。</p>
 <p>有了分支的概念，我们就可以新建一个分支，修复 bug，使新功能与 bug 修复同步进行。</p>
 <p>分支的实现其实很简单，我们可以先看一下 .git/HEAD 文件，它保存了当前的分支。</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cat .git/HEAD</div><div class="line">=&gt;r<span class="symbol">ef:</span> refs/heads/master</div></pre></td></tr></table></figure>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat .git/HEAD</span><br><span class="line">=&gt;r<span class="symbol">ef:</span> refs/heads/master</span><br></pre></td></tr></table></figure>
 <p>其实这个 ref 表示的就是一个分支，它也是一个文件，我们可以继续看一下这个文件的内容：</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cat .git/refs/heads/master</div><div class="line">=&gt; <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</div></pre></td></tr></table></figure>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat .git/refs/heads/master</span><br><span class="line">=&gt; <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</span><br></pre></td></tr></table></figure>
 <p>可以看到分支存储了一个 object，我们可以使用 cat-file 命令继续查看该 object 的内容。</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">git cat-file -p <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</div><div class="line">=&gt; tree <span class="number">15</span>f880be0567a8844291459f90e9d0004743c8d9</div><div class="line">=&gt; parent <span class="number">3</span>d885a272478d0080f6d22018480b2e83ec2c591</div><div class="line">=&gt; author Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></div><div class="line">=&gt; committer Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></div><div class="line">=&gt;</div><div class="line">=&gt; add branch paramter for rebase</div></pre></td></tr></table></figure>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git cat-file -p <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</span><br><span class="line">=&gt; tree <span class="number">15</span>f880be0567a8844291459f90e9d0004743c8d9</span><br><span class="line">=&gt; parent <span class="number">3</span>d885a272478d0080f6d22018480b2e83ec2c591</span><br><span class="line">=&gt; author Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></span><br><span class="line">=&gt; committer Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></span><br><span class="line">=&gt;</span><br><span class="line">=&gt; add branch paramter for rebase</span><br></pre></td></tr></table></figure>
 <p>从上面的内容，我们知道了分支指向了一次提交。为什么分支指向一个提交的原因，其实也是git中的分支为什么这么轻量的答案。</p>
 <p>因为分支就是指向了一个 commit 的指针，当我们提交新的commit，这个分支的指向只需要跟着更新就可以了，而创建分支仅仅是创建一个指针。</p>
 <h1 id="3-高层命令"><a href="#3-高层命令" class="headerlink" title="3. 高层命令"></a>3. 高层命令</h1><p>在 git 中分为两种类型的命令，一种是完成底层工作的工具集，称为底层命令，另一种是对用户更友好的高层命令。一条高层命令，往往是由多条底层命令组成的。</p>
 <p>不知道的人可能一听高层感觉很厉害的样子，其实就是指的是那些我们最常使用的git命令。</p>
 <h2 id="3-1-Add-amp-Commit"><a href="#3-1-Add-amp-Commit" class="headerlink" title="3.1 Add &amp; Commit"></a>3.1 Add &amp; Commit</h2><p>add 和 commit 应该可以说是我们使用频率最高的高层命令了。</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">touch README.md</div><div class="line">git add README.md</div><div class="line">git commit -m <span class="string">"add readme”</span></div></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">touch README.md</span><br><span class="line">git add README.md</span><br><span class="line">git commit -m <span class="string">"add readme”</span></span><br></pre></td></tr></table></figure>
 <p>touch 指的是创建一个文件，代表了我们对项目文件内容的修改，add 操作是将修改保存到暂存区，commit 是将暂存区的内容永久保存到本地仓库。</p>
 <p>每当将修改的文件加入到暂存区，git 都会根据文件的内容计算出 sha-1，并将内容转换成 blob，写入数据库。然后使用 sha-1 值更新该列表中的文件项。在暂存区的文件列表中，每一个文件名，都会对应一个sha-1值，用于指向文件的实际内容。最后提交的那一刻，git会将这个列表信息转换为项目的快照，也就是 tree 对象。写入数据库，并再构建一个commit对象，写入数据库。然后更新分支指向。</p>
 <h2 id="3-2-Conflicts-amp-Merge-amp-Rebase"><a href="#3-2-Conflicts-amp-Merge-amp-Rebase" class="headerlink" title="3.2 Conflicts &amp; Merge &amp; Rebase"></a>3.2 Conflicts &amp; Merge &amp; Rebase</h2><h2 id="3-2-1-Conflicts"><a href="#3-2-1-Conflicts" class="headerlink" title="3.2.1 Conflicts"></a>3.2.1 Conflicts</h2><p>git 中的分支十分轻量，因此我们在使用git的时候会频繁的用到分支。不可不免的需要将新创建的分支合并。</p>
@@ -579,10 +568,10 @@
 <p>再接着将 sha-1 为 6 的提交放入 done 文件，然后将 6 以补丁的形式打到 5’ 上，形成 6’。最后移动分支指针，使其指向最新的提交 6’ 上。这就完成了 rebase 的操作。</p>
 <p> <img src="https://dn-coding-net-production-pp.qbox.me/951cc638-7fd3-4e60-9452-eb17e5e12d89.png" alt="图片"></p>
 <p>我们看一下真实的 rebase 文件。</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">pick e0f56d9 update gitignore</div><div class="line">pick e370289 <span class="keyword">add</span><span class="bash"> a</span></div><div class="line"><span class="bash"></span></div><div class="line"><span class="bash"><span class="comment"># Commands:</span></span></div><div class="line"><span class="bash"><span class="comment"># p, pick = use commit</span></span></div><div class="line"><span class="bash"><span class="comment"># r, reword = use commit, but edit the commit message</span></span></div><div class="line"><span class="bash"><span class="comment"># e, edit = use commit, but stop for amending</span></span></div><div class="line"><span class="bash"><span class="comment"># s, squash = use commit, but meld into previous commit</span></span></div><div class="line"><span class="bash"><span class="comment"># f, fixup = like "squash", but discard this commit's log message</span></span></div><div class="line"><span class="bash"><span class="comment"># x, exec = run command (the rest of the line) using shell</span></span></div><div class="line"><span class="bash"><span class="comment"># d, drop = remove commit</span></span></div></pre></td></tr></table></figure>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pick e0f56d9 update gitignore</span><br><span class="line">pick e370289 <span class="keyword">add</span><span class="bash"> a</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Commands:</span></span></span><br><span class="line"><span class="bash"><span class="comment"># p, pick = use commit</span></span></span><br><span class="line"><span class="bash"><span class="comment"># r, reword = use commit, but edit the commit message</span></span></span><br><span class="line"><span class="bash"><span class="comment"># e, edit = use commit, but stop for amending</span></span></span><br><span class="line"><span class="bash"><span class="comment"># s, squash = use commit, but meld into previous commit</span></span></span><br><span class="line"><span class="bash"><span class="comment"># f, fixup = like "squash", but discard this commit's log message</span></span></span><br><span class="line"><span class="bash"><span class="comment"># x, exec = run command (the rest of the line) using shell</span></span></span><br><span class="line"><span class="bash"><span class="comment"># d, drop = remove commit</span></span></span><br></pre></td></tr></table></figure>
 <p>该文件一共有三列，第一列表示要进行的操作，所有可以进行的操作，在下面注释里都列了出来，比如 pick 表示使用该提交，reword 表示使用该提交，但修改其提交的 message，edit 表示使用该提交，但是要对该提交进行一些修改，其它的就不一一说了。</p>
 <p>而 done 文件的形式如下，和 git-rebase-todo 是一样的：</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pick e0f56d9 update gitignore</div><div class="line">pick e370289 <span class="keyword">add</span><span class="bash"> a</span></div></pre></td></tr></table></figure>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pick e0f56d9 update gitignore</span><br><span class="line">pick e370289 <span class="keyword">add</span><span class="bash"> a</span></span><br></pre></td></tr></table></figure>
 <p>从刚才的图中，我们就可以看到 rebase 的一个缺点，那就是修改了分支的历史提交。如果已经将分支推送到了远程仓库，会导致无法将修改后的分支推送上去，必须使用 -f 参数（force）强行推送。</p>
 <p>所以使用 rebase 最好不要在公共分支上进行操作。</p>
 <h2 id="3-3-Checkout、Revert、Reset"><a href="#3-3-Checkout、Revert、Reset" class="headerlink" title="3.3 Checkout、Revert、Reset"></a>3.3 Checkout、Revert、Reset</h2><h3 id="3-3-1-Checkout"><a href="#3-3-1-Checkout" class="headerlink" title="3.3.1 Checkout"></a>3.3.1 Checkout</h3><p>对于 checkout，我们一般不会陌生。因为使用它的频率非常高，经常用来切换分支、或者切换到某一次提交。</p>
@@ -628,7 +617,7 @@
 <p>项目发布到线上的项目出现了bug，而经过排查，却找不到问 bug 的源头。我们还有一种方法，那就是先找到上一次好的版本，从上一次到本次之间的所有提交依次尝试，一一排查。直到找到出现问题的那一次提交，然后分析 bug 原因。</p>
 <p>git 为我们想到了这样的场景，同样是刚才的思路，但是使用二分法进行查找。这就是 bisect 命令。</p>
 <p>使用该命令很简单，</p>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">git</span> <span class="keyword">bisect </span>start</div><div class="line"><span class="symbol">git</span> <span class="keyword">bisect </span><span class="keyword">bad </span>HEAD</div><div class="line"><span class="symbol">git</span> <span class="keyword">bisect </span>good <span class="built_in">v4</span>.<span class="number">1</span></div></pre></td></tr></table></figure>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">git</span> <span class="keyword">bisect </span>start</span><br><span class="line"><span class="symbol">git</span> <span class="keyword">bisect </span><span class="keyword">bad </span>HEAD</span><br><span class="line"><span class="symbol">git</span> <span class="keyword">bisect </span>good <span class="built_in">v4</span>.<span class="number">1</span></span><br></pre></td></tr></table></figure>
 <p>git 会计算中间的一个提交，然后我们进行测试。</p>
 <p> <img src="https://dn-coding-net-production-pp.qbox.me/1175a6e4-0a52-40b1-a451-23f8eaa123ca.png" alt="图片"></p>
 <p>根据测试结果，使用  git bisect good or bad 进行标记，git 会自动切换到下一个提交。不断的重复这个步骤，直到找到最初引入 bug 的那一次提交。</p>
@@ -692,6 +681,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/12/spring-static-resource-process/" rel="prev" title="深入 Spring 系列之静态资源处理">
+                深入 Spring 系列之静态资源处理 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -780,7 +773,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -802,7 +795,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1356,113 +1349,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("jR0BmtRkUJrumxzmaeoBLOFV-gzGzoHsz", "q6Ex3P5JNnqy3tBDMMuRS5T5");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 

@@ -88,7 +88,7 @@
 <meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/1935c742-57af-4205-9fa1-d42b54323c54.png">
 <meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/713886dd-e199-453c-9863-c65457fddb14.png">
 <meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/c3374133-939a-4f35-9ff3-df1cfa87c284.png">
-<meta property="og:updated_time" content="2017-09-27T02:10:06.386Z">
+<meta property="og:updated_time" content="2017-09-27T02:10:06.387Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git 客户端在 WebIDE 中的实现">
 <meta name="twitter:description" content="Git 客户端在 WebIDE 中的实现上周日做了一个分享，介绍了如何在 WebIDE 中实现 Git 客户端，主要内容包括 Git 原理、JGit 的使用。以下是主要的分享内容。 版本控制管理文档、程序、配置等文件内容变化的的系统。 其实版本控制很想 并不难理解，其实即使不是编程人员对他也不会陌生，比如 windows 的系统还原，mac 的 timemachine。他们在某一时刻，记录下系统的">
@@ -379,17 +379,6 @@
 
           
           
-             <span id="/2016/05/03/how-implement-git-client-in-web-ide/" class="leancloud_visitors" data-flag-title="Git 客户端在 WebIDE 中的实现">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
 
           
 
@@ -444,7 +433,7 @@
 </li>
 </ol>
 <h1 id="Git-原理"><a href="#Git-原理" class="headerlink" title="Git 原理"></a>Git 原理</h1><h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>一段经典的 git 操作。</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">touch README.md</div><div class="line">git add README.md</div><div class="line">git commit -m <span class="string">"add readme"</span></div></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">touch README.md</span><br><span class="line">git add README.md</span><br><span class="line">git commit -m <span class="string">"add readme"</span></span><br></pre></td></tr></table></figure>
 <p><code>touch READEME.md</code> 可以代表创建、修改文件操作<br><code>git add README.md</code> 表示将对文件的改动添加到暂存区<br><code>git commit -m &quot;add readme&quot;</code>表示将改动提交到仓库  </p>
 <p>这些我们都已经知道了，那么添加到暂存区、提交到仓库具体是什么意思？</p>
 <h2 id="三种状态"><a href="#三种状态" class="headerlink" title="三种状态"></a>三种状态</h2><p> <img src="https://dn-coding-net-production-pp.qbox.me/9dcc8fa1-7217-425b-9102-46ad3b9275e3.png" alt="图片"></p>
@@ -462,7 +451,7 @@
 <h2 id="git-中的快照"><a href="#git-中的快照" class="headerlink" title="git 中的快照"></a>git 中的快照</h2><p><img src="https://dn-coding-net-production-pp.qbox.me/f0aeb94f-6d70-40bc-b40b-7bbb1d7de688.png" alt="图片"></p>
 <p>每一个 version，都是项目的一次完整快照。而快照中没有修改的文件，Git 使用链接指向之前存储的文件。</p>
 <p>这就带来了一个问题，链接是什么？怎么快速的知道文件内容是否发生了改变？git 中的方案是使用 SHA-1。</p>
-<h2 id="SHA-1"><a href="#SHA-1" class="headerlink" title="SHA-1"></a>SHA-1</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> <span class="string">'test content'</span> | git <span class="built_in">hash</span>-object --stdin</div><div class="line">d670460b4b4aece5915caf5c68d12f560a9fe3e4</div></pre></td></tr></table></figure>
+<h2 id="SHA-1"><a href="#SHA-1" class="headerlink" title="SHA-1"></a>SHA-1</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'test content'</span> | git <span class="built_in">hash</span>-object --stdin</span><br><span class="line">d670460b4b4aece5915caf5c68d12f560a9fe3e4</span><br></pre></td></tr></table></figure>
 <p>特点：</p>
 <ul>
 <li>由文件内容计算出的hash值</li>
@@ -502,11 +491,11 @@
 </li>
 </ul>
 <h2 id="分支的实现"><a href="#分支的实现" class="headerlink" title="分支的实现"></a>分支的实现</h2><p>在 .git/HEAD 文件中，保存了当前的分支。</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cat .git/HEAD</div><div class="line">=&gt;r<span class="symbol">ef:</span> refs/heads/master</div></pre></td></tr></table></figure>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat .git/HEAD</span><br><span class="line">=&gt;r<span class="symbol">ef:</span> refs/heads/master</span><br></pre></td></tr></table></figure>
 <p>其实这个 ref 表示的就是一个分支，它也是一个文件，我们可以继续看一下这个文件的内容：</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cat .git/refs/heads/master</div><div class="line">=&gt; <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</div></pre></td></tr></table></figure>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat .git/refs/heads/master</span><br><span class="line">=&gt; <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</span><br></pre></td></tr></table></figure>
 <p>可以看到分支存储了一个 object，我们可以使用 cat-file 命令继续查看该 object 的内容。</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">git cat-file -p <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</div><div class="line">=&gt; tree <span class="number">15</span>f880be0567a8844291459f90e9d0004743c8d9</div><div class="line">=&gt; parent <span class="number">3</span>d885a272478d0080f6d22018480b2e83ec2c591</div><div class="line">=&gt; author Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></div><div class="line">=&gt; committer Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></div><div class="line">=&gt;</div><div class="line">=&gt; add branch paramter for rebase</div></pre></td></tr></table></figure>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git cat-file -p <span class="number">2</span>b388d2c1c20998b6233ff47596b0c87ed3ed8f8</span><br><span class="line">=&gt; tree <span class="number">15</span>f880be0567a8844291459f90e9d0004743c8d9</span><br><span class="line">=&gt; parent <span class="number">3</span>d885a272478d0080f6d22018480b2e83ec2c591</span><br><span class="line">=&gt; author Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></span><br><span class="line">=&gt; committer Hehe <span class="built_in">Tan</span> &lt;xiayule148@gmail.com&gt; <span class="number">1460971725</span> +<span class="number">0800</span></span><br><span class="line">=&gt;</span><br><span class="line">=&gt; add branch paramter for rebase</span><br></pre></td></tr></table></figure>
 <p>从上面的内容，我们知道了分支指向了一次提交。为什么分支指向一个提交的原因，其实也是git中的分支为什么这么轻量的答案。</p>
 <p>因为分支就是指向了一个 commit 的指针，当我们提交新的commit，这个分支的指向只需要跟着更新就可以了，而创建分支仅仅是创建一个指针。</p>
 <p>至此git的原理就讲完了，接下来看一下 JGit。</p>
@@ -517,13 +506,13 @@
 <p>底层命令的入口是 Repository 类。底层命令不同于高层命令，它们直接作用域 仓库（Repository）。比如 AbstractTreeIterator，就是用来遍历 Tree 结构的，DirCache 是用来操作暂存区的，RevWalk 是用来遍历 commit 的，ObjectInsert 是用来生成 obj的，ObjectLoader 是用来加载 object。</p>
 <p>一条高层命令往往是由多条底层命令组成的。</p>
 <h2 id="Repository-仓库"><a href="#Repository-仓库" class="headerlink" title="Repository(仓库)"></a>Repository(仓库)</h2><p>作为一切的开始，你需要一个 Repository。</p>
-<figure class="highlight haxe"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Repository repository = <span class="keyword">new</span> <span class="type">FileRepositoryBuilder</span>()</div><div class="line">                .setGitDir(<span class="keyword">new</span> <span class="type">File</span>(<span class="string">"/home/tan/GitTest/.git"</span>))</div><div class="line">                .readEnvironment()</div><div class="line">                .build();</div></pre></td></tr></table></figure>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Repository repository = <span class="keyword">new</span> <span class="type">FileRepositoryBuilder</span>()</span><br><span class="line">                .setGitDir(<span class="keyword">new</span> <span class="type">File</span>(<span class="string">"/home/tan/GitTest/.git"</span>))</span><br><span class="line">                .readEnvironment()</span><br><span class="line">                .build();</span><br></pre></td></tr></table></figure>
 <p>使用时只需要将仓库的路径传进来就可以了，它会自动读取一些必要的环境变量。</p>
 <h2 id="ObjectInserter"><a href="#ObjectInserter" class="headerlink" title="ObjectInserter"></a>ObjectInserter</h2><p>ObjectInserter用来将数据插入到git数据库中，也就是 objects 目录下。插入的类型为我们刚才提到的四种，分别是 Blob、Tree、Commit、Tag。</p>
-<figure class="highlight haxe"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> (ObjectInserter inserter = repo.<span class="keyword">new</span><span class="type">ObjectInserter</span>()) &#123;</div><div class="line">    ObjectId objectId = inserter.insert(Constants.OBJ_BLOB,</div><div class="line">        <span class="keyword">new</span> <span class="type">String</span>(<span class="string">"test"</span>).getBytes());</div><div class="line">    inserter.flush();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (ObjectInserter inserter = repo.<span class="keyword">new</span><span class="type">ObjectInserter</span>()) &#123;</span><br><span class="line">    ObjectId objectId = inserter.insert(Constants.OBJ_BLOB,</span><br><span class="line">        <span class="keyword">new</span> <span class="type">String</span>(<span class="string">"test"</span>).getBytes());</span><br><span class="line">    inserter.flush();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>第二个参数表示要插入的数据，该数据会自动使用 zlib 压缩。</p>
 <h2 id="TreeWalk"><a href="#TreeWalk" class="headerlink" title="TreeWalk"></a>TreeWalk</h2><p>用来遍历目录结构，可以为工作区、暂存区或项目快照（版本库）。</p>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">try</span> (TreeWalk treeWalk = <span class="keyword">new</span> TreeWalk(repo)) &#123;</div><div class="line">    treeWalk.setRecursive(<span class="keyword">true</span>);</div><div class="line"></div><div class="line">    treeWalk.addTree(<span class="keyword">new</span> FileTreeIterator(repo));</div><div class="line">    treeWalk.addTree(<span class="keyword">new</span> DirCacheIterator(repo.readDirCache()));</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (treeWalk.<span class="keyword">next</span>()) &#123;</div><div class="line">        AbstractTreeIterator treeIterator</div><div class="line">                = treeWalk.getTree(<span class="number">0</span>, AbstractTreeIterator.<span class="keyword">class</span>);</div><div class="line">        DirCacheIterator dirCacheIterator</div><div class="line">                = treeWalk.getTree(<span class="number">1</span>, DirCacheIterator.<span class="keyword">class</span>);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">try</span> (TreeWalk treeWalk = <span class="keyword">new</span> TreeWalk(repo)) &#123;</span><br><span class="line">    treeWalk.setRecursive(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    treeWalk.addTree(<span class="keyword">new</span> FileTreeIterator(repo));</span><br><span class="line">    treeWalk.addTree(<span class="keyword">new</span> DirCacheIterator(repo.readDirCache()));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (treeWalk.<span class="keyword">next</span>()) &#123;</span><br><span class="line">        AbstractTreeIterator treeIterator</span><br><span class="line">                = treeWalk.getTree(<span class="number">0</span>, AbstractTreeIterator.<span class="keyword">class</span>);</span><br><span class="line">        DirCacheIterator dirCacheIterator</span><br><span class="line">                = treeWalk.getTree(<span class="number">1</span>, DirCacheIterator.<span class="keyword">class</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>TreeWalk 是用来遍历树这种结构的，它比较厉害的一点是可以同时遍历多棵树，遍历多课树的思路为将文件列表做一个合并，然后遍历这个列表，没有的调用 getTree 会返回 null 值。</p>
 <p>其实 git status 就是这种原理来做的:</p>
 <ol>
@@ -535,7 +524,7 @@
 <li>missing：在 index 存在，在工作区不存在</li>
 </ol>
 <h2 id="RevWalk"><a href="#RevWalk" class="headerlink" title="RevWalk"></a>RevWalk</h2><p>RevWalk 用来遍历 Commit。</p>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="symbol">try</span> (<span class="keyword">RevWalk </span><span class="keyword">revWalk </span>= new <span class="keyword">RevWalk(repository)) </span>&#123;</div><div class="line">    <span class="keyword">revWalk.markStart(one);</span></div><div class="line"><span class="keyword"> </span>   <span class="keyword">revWalk.markStart(two);</span></div><div class="line"><span class="keyword"></span></div><div class="line"><span class="keyword"> </span>   <span class="keyword">revWalk.setRevFilter(RevFilter.MERGE_BASE);</span></div><div class="line"><span class="keyword"></span></div><div class="line"><span class="keyword"> </span>   <span class="keyword">RevCommit </span><span class="keyword">base </span>= <span class="keyword">revWalk.next();</span></div><div class="line"><span class="keyword">&#125;</span></div></pre></td></tr></table></figure>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="symbol">try</span> (<span class="keyword">RevWalk </span><span class="keyword">revWalk </span>= new <span class="keyword">RevWalk(repository)) </span>&#123;</span><br><span class="line">    <span class="keyword">revWalk.markStart(one);</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">revWalk.markStart(two);</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">revWalk.setRevFilter(RevFilter.MERGE_BASE);</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">RevCommit </span><span class="keyword">base </span>= <span class="keyword">revWalk.next();</span></span><br><span class="line"><span class="keyword">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>我们这个例子，标记了两个 commit，我们设置的 filter 是 MERGE_BASE, 它会自动查找这两个 commit 所在分支的 MERGE_BASE。其中 MERGE_BASE 可以看作是分支的分岔点，合并的时候 MERGE_BASE 会作为参照。</p>
 <h2 id="使用底层命令"><a href="#使用底层命令" class="headerlink" title="使用底层命令"></a>使用底层命令</h2><p>高层命令其实是由多条底层命令组成的，比如我们最常使用的 add、commit：</p>
 <ul>
@@ -556,10 +545,10 @@
 </li>
 </ul>
 <h2 id="高层命令"><a href="#高层命令" class="headerlink" title="高层命令"></a>高层命令</h2><p>上面的复杂操作，可以简单的用底层命令替代。</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">git</span><span class="selector-class">.add</span>()<span class="selector-class">.addFilepattern</span>(<span class="string">"README"</span>)<span class="selector-class">.call</span>();</div><div class="line"><span class="selector-tag">git</span><span class="selector-class">.commit</span>()<span class="selector-class">.setMessage</span>(<span class="string">"add readme"</span>)<span class="selector-class">.call</span>();</div></pre></td></tr></table></figure>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">git</span><span class="selector-class">.add</span>()<span class="selector-class">.addFilepattern</span>(<span class="string">"README"</span>)<span class="selector-class">.call</span>();</span><br><span class="line"><span class="selector-tag">git</span><span class="selector-class">.commit</span>()<span class="selector-class">.setMessage</span>(<span class="string">"add readme"</span>)<span class="selector-class">.call</span>();</span><br></pre></td></tr></table></figure>
 <h1 id="高级操作的局限"><a href="#高级操作的局限" class="headerlink" title="高级操作的局限"></a>高级操作的局限</h1><p>高层命令使用起来方便，但是它所提供的功能有限。这里我们拿 merge 举例。</p>
 <h2 id="使用-JGit-Merge-api"><a href="#使用-JGit-Merge-api" class="headerlink" title="使用 JGit Merge api"></a>使用 JGit Merge api</h2><p>使用 JGit 提供的接口进行 merge 十分的方便，只需要指定要合并的 branch 就可以了。</p>
-<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">MergeCommand <span class="keyword">merge</span> = git.<span class="keyword">merge</span>();</div><div class="line"><span class="keyword">merge</span>.<span class="keyword">include</span>(branch);</div><div class="line">MergeResult result = <span class="keyword">merge</span>.<span class="keyword">call</span>();</div></pre></td></tr></table></figure>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MergeCommand <span class="keyword">merge</span> = git.<span class="keyword">merge</span>();</span><br><span class="line"><span class="keyword">merge</span>.<span class="keyword">include</span>(branch);</span><br><span class="line">MergeResult result = <span class="keyword">merge</span>.<span class="keyword">call</span>();</span><br></pre></td></tr></table></figure>
 <p>但是 merge 之后呢，文件冲突了怎么办，怎么解决冲突呢？实际上除了 merge，stash、rebase 等等操作也都会产生冲突。也就是说 git 冲突文件的处理是客户端的重要功能之一。</p>
 <p>遗憾的是 jgit 并没有提供解决冲突的方案，所以这就需要我们自己来解决这个问题。</p>
 <h2 id="resolve-conflicts"><a href="#resolve-conflicts" class="headerlink" title="resolve conflicts:"></a>resolve conflicts:</h2><p>一种比较理想的解决冲突的方案是，将冲突的文件根据本地修改、基础版本、要合并分支的修改分成三栏。</p>
@@ -572,7 +561,7 @@
 <li><p>使用暂存区的信息</p>
 <p> 想想我们 当我们有合并冲突状态时，使用 git status，会列出冲突文件，以及冲突的类型，比如 “双方修改”、“由我们删除”，“双方添加”等这样的字眼，git 如果获得这些信息的呢？</p>
 <p> 如果存在冲突文件，我们查看暂存区，可以看到类似下面的内容：</p>
- <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">git ls-files --stage</div><div class="line"><span class="number">100644</span> <span class="number">6e9</span>f0da13f19b444ec3a9c3d6e795ad35c0554a2 <span class="number">1</span>	Readme</div><div class="line"><span class="number">100644</span> <span class="number">29</span>d460866c44ad72cc08ef4983fc6ebd48053bab <span class="number">2</span>	Readme</div><div class="line"><span class="number">100644</span> <span class="number">12892</span>f544e81ef2170034392f63c7fc5e6c6ccd9 <span class="number">3</span>	Readme</div></pre></td></tr></table></figure>
+ <figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git ls-files --stage</span><br><span class="line"><span class="number">100644</span> <span class="number">6e9</span>f0da13f19b444ec3a9c3d6e795ad35c0554a2 <span class="number">1</span>	Readme</span><br><span class="line"><span class="number">100644</span> <span class="number">29</span>d460866c44ad72cc08ef4983fc6ebd48053bab <span class="number">2</span>	Readme</span><br><span class="line"><span class="number">100644</span> <span class="number">12892</span>f544e81ef2170034392f63c7fc5e6c6ccd9 <span class="number">3</span>	Readme</span><br></pre></td></tr></table></figure>
 <p> 原来暂存区中有四种状态用于标示文件：    </p>
 <pre><code>* **0:** standard stage
 * **1:** base tree revision
@@ -593,7 +582,7 @@
 <p>我们拿第一种情况举例，文件（Readme）有两种状态 1 和 2，1 表示该文件存在于 commit 1（也就是MERGE_BASE），2 表示该文件在 commit 2 （master 分支）中被修改了，没有状态 3，也就是该文件在 commit 3（test分支）被删除了，总结来说这种状态就是 DELETED_BY_THEM。</p>
 <p>可以再看一下第四种情况，文件（Readme）有三种状态 1、2、3，1 表示 commit 1（MERGE_BASE）中存在，2 表示 commit 2（master 分支）进行了修改，3 表示（test 分支）也就行了修改，总结来说就是 BOTH_MODIFIED（双方修改）。</p>
 <h2 id="获取冲突文件的三个版本"><a href="#获取冲突文件的三个版本" class="headerlink" title="获取冲突文件的三个版本"></a>获取冲突文件的三个版本</h2><p>知道了冲突文件的状态，就能在暂存区获得冲突文件的三个版本了。代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">DirCache dirCache = repository.readDirCache();</div><div class="line"></div><div class="line"><span class="comment">// 在暂存区中，所有文件是按照字母顺序排列的，因此文件的不同状态是连着的</span></div><div class="line"><span class="keyword">int</span> eIdx = dirCache.findEntry(path);</div><div class="line"><span class="comment">// nextEntry 会自动调过文件名相同的文件，找到下一个文件。</span></div><div class="line"><span class="keyword">int</span> lastIdx = dirCache.nextEntry(eIdx);</div><div class="line"></div><div class="line"><span class="comment">// 在 [eIdx, lastIdx) 区间的也就是文件的冲突的不同版本</span></div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;lastIdx - eIdx; i++) &#123;</div><div class="line">    DirCacheEntry entry = dirCache.getEntry(eIdx + i);</div><div class="line"></div><div class="line">    <span class="comment">// 如果是 MERGE_BASE</span></div><div class="line">    <span class="keyword">if</span> (entry.getStage() == DirCacheEntry.STAGE_1)</div><div class="line">        readBlobContent(entry.getObjectId());</div><div class="line">    <span class="comment">// 如果是 当前分支</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (entry.getStage() == DirCacheEntry.STAGE_2)</div><div class="line">        readBlobContent(entry.getObjectId());</div><div class="line">    <span class="comment">// 如果是 要合并的分支</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (entry.getStage() == DirCacheEntry.STAGE_3)</div><div class="line">        readBlobContent(entry.getObjectId());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">DirCache dirCache = repository.readDirCache();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在暂存区中，所有文件是按照字母顺序排列的，因此文件的不同状态是连着的</span></span><br><span class="line"><span class="keyword">int</span> eIdx = dirCache.findEntry(path);</span><br><span class="line"><span class="comment">// nextEntry 会自动调过文件名相同的文件，找到下一个文件。</span></span><br><span class="line"><span class="keyword">int</span> lastIdx = dirCache.nextEntry(eIdx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在 [eIdx, lastIdx) 区间的也就是文件的冲突的不同版本</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;lastIdx - eIdx; i++) &#123;</span><br><span class="line">    DirCacheEntry entry = dirCache.getEntry(eIdx + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果是 MERGE_BASE</span></span><br><span class="line">    <span class="keyword">if</span> (entry.getStage() == DirCacheEntry.STAGE_1)</span><br><span class="line">        readBlobContent(entry.getObjectId());</span><br><span class="line">    <span class="comment">// 如果是 当前分支</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (entry.getStage() == DirCacheEntry.STAGE_2)</span><br><span class="line">        readBlobContent(entry.getObjectId());</span><br><span class="line">    <span class="comment">// 如果是 要合并的分支</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (entry.getStage() == DirCacheEntry.STAGE_3)</span><br><span class="line">        readBlobContent(entry.getObjectId());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>至此我们得到了解决合并冲突的一个方案。</p>
 <h1 id="Thanks"><a href="#Thanks" class="headerlink" title="Thanks"></a>Thanks</h1>
       
@@ -746,7 +735,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -768,7 +757,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1322,113 +1311,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("jR0BmtRkUJrumxzmaeoBLOFV-gzGzoHsz", "q6Ex3P5JNnqy3tBDMMuRS5T5");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 

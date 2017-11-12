@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tanhe123's blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="1. 背景前一段时间，WebIDE 开源的过程中，无意间接触到 webjars，觉得比较有趣，于是研究并整理了一下。 webjars 是将前端的库（比如 jQuery）打包成 Jar 文件，然后使用基于 JVM 的包管理器（比如 Maven、Gradle 等）管理前端依赖的方案。 webjars 的效果非常神奇。对于其用法，我们可以在 maven 项目中添加下面的依赖： 12345&amp;lt;depe">
+<meta name="keywords" content="spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入 Spring 系列之静态资源处理">
+<meta property="og:url" content="http://yoursite.com/2016/10/12/spring-static-resource-process/index.html">
+<meta property="og:site_name" content="tanhe123&#39;s blog">
+<meta property="og:description" content="1. 背景前一段时间，WebIDE 开源的过程中，无意间接触到 webjars，觉得比较有趣，于是研究并整理了一下。 webjars 是将前端的库（比如 jQuery）打包成 Jar 文件，然后使用基于 JVM 的包管理器（比如 Maven、Gradle 等）管理前端依赖的方案。 webjars 的效果非常神奇。对于其用法，我们可以在 maven 项目中添加下面的依赖： 12345&amp;lt;depe">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/4d1a8ea6-eec1-444f-a99a-a6fd5c324847.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/00f2a3a4-d342-44ec-ab52-35738faf9e75.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/d5b35f32-595e-45e8-b679-5193ba6d27f0.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/0a8ef4d8-4a06-470a-bed6-a449cb36b516.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/68f17b84-df51-437a-88ed-aa1f4174d5fe.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/7e202673-8db6-445d-8384-a7d0fa3aeb7d.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/37f1d337-d5e4-4453-bc81-736acc346f14.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/11e15667-ecca-47be-9168-f28a3f5fe170.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/7524d593-6b09-4ecc-9d4e-873b12c353f1.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/3e58d9a3-c418-4db5-83e9-5759ba856650.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/a33bf0d8-1c6c-4d72-b45f-2318d75e6a1c.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/ec68ef1e-e17a-4021-bbd6-3698538b164f.png">
+<meta property="og:updated_time" content="2017-11-12T10:55:09.696Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入 Spring 系列之静态资源处理">
+<meta name="twitter:description" content="1. 背景前一段时间，WebIDE 开源的过程中，无意间接触到 webjars，觉得比较有趣，于是研究并整理了一下。 webjars 是将前端的库（比如 jQuery）打包成 Jar 文件，然后使用基于 JVM 的包管理器（比如 Maven、Gradle 等）管理前端依赖的方案。 webjars 的效果非常神奇。对于其用法，我们可以在 maven 项目中添加下面的依赖： 12345&amp;lt;depe">
+<meta name="twitter:image" content="https://dn-coding-net-production-pp.qbox.me/4d1a8ea6-eec1-444f-a99a-a6fd5c324847.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":true,"onmobile":true},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/12/spring-static-resource-process/"/>
+
+
+
+
+
+  <title>深入 Spring 系列之静态资源处理 | tanhe123's blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e2d9319170688f57c5ef5cd659a8092c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tanhe123's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/12/spring-static-resource-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tanhe123">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tanhe123's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入 Spring 系列之静态资源处理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-12T09:12:00+08:00">
+                2016-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index">
+                    <span itemprop="name">spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/12/spring-static-resource-process/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/10/12/spring-static-resource-process/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>前一段时间，WebIDE 开源的过程中，无意间接触到 <a href="http://www.webjars.org/" target="_blank" rel="external">webjars</a>，觉得比较有趣，于是研究并整理了一下。</p>
+<p>webjars 是将前端的库（比如 jQuery）打包成 Jar 文件，然后使用基于 JVM 的包管理器（比如 Maven、Gradle 等）管理前端依赖的方案。</p>
+<p>webjars 的效果非常神奇。对于其用法，我们可以在 maven 项目中添加下面的依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.webjars<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jquery<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后通过请求 <code>http://localhost:8080/webjars/jquery/3.1.0/jquery.js</code> 即可正确访问到 jquery 文件。</p>
+<a id="more"></a>
+<p>可以再举一个应用场景的例子，比如项目要添加 Api 文档，决定使用 Swagger，<a href="http://petstore.swagger.io/" target="_blank" rel="external">demo 参见</a>。效果如图：</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/4d1a8ea6-eec1-444f-a99a-a6fd5c324847.png" alt="图片"> </p>
+<p>该框架有两部分，一部分是 springfox-swagger2 提供后端实现，另一部分是 springfox-swagger-ui 提供前端实现。引入后端实现很简单，加入 maven 依赖即可，但是引入 springfox-swagger-ui 麻烦一些。</p>
+<ul>
+<li><p>一种方式是将该项目编译后的 <a href="https://github.com/swagger-api/swagger-ui/tree/master/dist" target="_blank" rel="external">source</a> 加入到项目。这种方式虽然能达到效果，但版本的升级就成了问题，需要手工维护。</p>
+</li>
+<li><p>另一种方式就是我们提到的 webjars 了。去 <a href="http://www.webjars.org/" target="_blank" rel="external">webjars 官网</a>、<a href="http://mvnrepository.com/" target="_blank" rel="external">maven 仓库</a>、<a href="https://github.com/swagger-api" target="_blank" rel="external">官方文档</a> 都可以查到 swagger-ui 依赖。将依赖加入 pom.xml 后，不需要对前端进行任何配置、修改即可引入前端代码。代码的更新也很方便，修改依赖版本号即可。</p>
+</li>
+</ul>
+<p>经过研究才发现，webjars 这并非新的技术，而是利用现有的框架对静态资源的处理方案实现的。接下来我们一起看看 webjars 的实现以及静态资源处理的设计方案。</p>
+<h1 id="2-预备知识"><a href="#2-预备知识" class="headerlink" title="2. 预备知识"></a>2. 预备知识</h1><h2 id="2-1-Servlet-3"><a href="#2-1-Servlet-3" class="headerlink" title="2.1 Servlet 3"></a>2.1 Servlet 3</h2><p>我们可以先来看一下 jquery webjar 的包结构：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">jquery-3</span><span class="selector-class">.1</span><span class="selector-class">.0</span><span class="selector-class">.jar</span></span><br><span class="line">    └─ <span class="selector-tag">META-INF</span></span><br><span class="line">        └─ <span class="selector-tag">resources</span></span><br><span class="line">            └─ <span class="selector-tag">webjars</span></span><br><span class="line">                └─ <span class="selector-tag">jquery</span></span><br><span class="line">                    └─ 3<span class="selector-class">.1</span><span class="selector-class">.0</span></span><br><span class="line">                        └─ <span class="selector-tag">jquery</span><span class="selector-class">.js</span></span><br></pre></td></tr></table></figure>
+<p>拿 Servlet 3 举例，应用打成 war 后，Jar（包括 WebJars）会被放在 <code>WEB-INF/lib</code> 目录下，而 Servlet 3 允许直接访问 <code>WEB-INF/lib</code> 下 jar 中的 <code>/META-INF/resources</code> 目录下的资源。简单来说就是 <code>WEB-INF/lib/{\*.jar}/META-INF/resources</code> 下的资源可以被直接访问。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/00f2a3a4-d342-44ec-ab52-35738faf9e75.png" alt="图片"></p>
+<p>所以对于 Servlet 3，直接使用 <code>http://localhost:8080/webjars/jquery/3.1.0/jquery.js</code> 即可访问到 webjar 中的 jquery.js，而不用做其它的配置。 </p>
+<p>那么如何在 Spring MVC 中访问 webjars 呢？或者说，Spring MVC 如何处理静态资源？</p>
+<h2 id="2-2-Spring-MVC"><a href="#2-2-Spring-MVC" class="headerlink" title="2.2 Spring MVC"></a>2.2 Spring MVC</h2><p>Spring MVC 的入口是 DispatcherServlet，所有的请求都会汇集于该类，而后分发给不同的处理类。如果不做额外的配置，是无法访问静态资源的。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/d5b35f32-595e-45e8-b679-5193ba6d27f0.png" alt="图片"> </p>
+<p>如果想让 Dispatcher Servlet 直接可以访问到静态资源，最简单的方法当然是交给默认的 Servlet。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/0a8ef4d8-4a06-470a-bed6-a449cb36b516.png" alt="图片"> </p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">WebConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    public void configureDefaultServletHandling(<span class="type">DefaultServletHandlerConfigurer</span> configurer) &#123;</span><br><span class="line">        configurer.enable();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种情况下 Spring MVC 对资源的处理与 Servlet 方式相同。</p>
+<h1 id="3-基础"><a href="#3-基础" class="headerlink" title="3. 基础"></a>3. 基础</h1><p>我们可以通过很简单的配置使得 Spring MVC 有能力处理对静态资源进行处理。</p>
+<p>在 Spring MVC 中，资源的查找、处理使用的是责任链设计模式（Filter Chain）：</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/68f17b84-df51-437a-88ed-aa1f4174d5fe.png" alt="图片"> </p>
+<p>其思路为如果当前 resolver 找不到资源，则转交给下一个 resolver 处理。 当前 resolver 找到资源则立即返回给上级 resovler（如果存在），此时上级 resolver 又可以选择对资源进一步处理或再次返回给它的上级（如果存在）。</p>
+<p>配置方法为重写 WebMvcConfigurerAdapter 类的 addResourceHandlers。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">WebConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">public void addResourceHandlers(<span class="type">ResourceHandlerRegistry</span> registry) &#123;</span><br><span class="line">    registry.addResourceHandler(<span class="string">"/webjars/**"</span>)</span><br><span class="line">                .addResourceLocations(</span><br><span class="line">                        <span class="string">"classpath:/META-INF/resources/webjars/"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过这样的配置，就成功添加了一个 <code>PathResourceResolver</code>。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/7e202673-8db6-445d-8384-a7d0fa3aeb7d.png" alt="图片"> </p>
+<p>该 resolver 的作用是将 url 为 <code>/webjars/**</code> 的请求映射到 <code>classpath:/META-INF/resources/webjars/</code>。</p>
+<p>比如请求 <code>http://localhost:8080/webjars/jquery/3.1.0/jquery.js</code> 时， Spring MVC 会查找路径为 <code>classpath:/META-INF/resources/webjars/jquery/3.1.0/jquery.js</code> 的资源文件。</p>
+<h1 id="4-进阶"><a href="#4-进阶" class="headerlink" title="4. 进阶"></a>4. 进阶</h1><h2 id="4-1-为静态资源添加版本号"><a href="#4-1-为静态资源添加版本号" class="headerlink" title="4.1 为静态资源添加版本号"></a>4.1 为静态资源添加版本号</h2><p>为了简单起见，我们假设静态资源存放在 <code>classpath:/static</code>，且映射的 url 为 <code>/static</code>。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">WebConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    public void addResourceHandlers(<span class="type">ResourceHandlerRegistry</span> registry) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 映射 /static 的请求到 classpath 下的 static 目录</span></span><br><span class="line"></span><br><span class="line">    registry.addResourceHandler(<span class="string">"/static/**"</span>)</span><br><span class="line">                .addResourceLocations(<span class="string">"classpath:/static"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如，请求 <code>/static/style.css</code>, 则会直接查找 <code>classpath:/static/style.css</code>。</p>
+<p>我们刚才说到，这段代码实际上是添加了一个 PathResourceResolver，来完成对资源的查找，那么我们是不是可以继续向 Resolver Chain 添加更多的 Resource Resolver，从而实现对静态资源更多样化的处理呢？</p>
+<p>答案是肯定的，接下来，我们添加 VersionResourceResolver。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/37f1d337-d5e4-4453-bc81-736acc346f14.png" alt="图片"> </p>
+<p>VersionResourceResolver 可以为资源添加版本号。其所作的工作如下：首先使用下一个 resolver 获取资源，如果找到资源则返回，不做其它处理；如果 下一个 resolver 找不到资源，则尝试去掉 url 中的 version 信息，重新调用下一个 resolver 处理，然后无论下一个 resolver 能否处理，都返回其结果。</p>
+<p>版本号的策略有两种，下面分别阐述。</p>
+<h2 id="4-1-1-指定版本号"><a href="#4-1-1-指定版本号" class="headerlink" title="4.1.1 指定版本号"></a>4.1.1 指定版本号</h2><p>指定固定值作为版本号，比如：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">   registry.addResourceHandler(<span class="string">"/static/**"</span>).addResourceLocations(<span class="string">"classpath:/static"</span>)</span><br><span class="line">           <span class="comment">// resourceChain(false) 的作用后面会讲解</span></span><br><span class="line">           .resourceChain(<span class="keyword">false</span>)</span><br><span class="line">           <span class="comment">// 添加 VersionResourceResolver，且指定版本号</span></span><br><span class="line">           .addResolver(<span class="keyword">new</span> VersionResourceResolver()</span><br><span class="line">               .addFixedVersionStrategy(<span class="string">"1.0.0"</span>, <span class="string">"/**"</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，在请求资源时，加上 <code>/1.0.0</code> 前缀，即 <code>http://localhost:8080/static/1.0.0/style.css</code> 也可正确访问。</p>
+<p>VersionResourceResolver 在处理该请求时，首先使用 PathResourceResolver 按照配置的映射关系 <code>&quot;/static/**&quot; =&gt; &quot;classpath:/static&quot;</code> 处理，即查找文件 <code>classpath:/static/1.0.0/style.css</code>。由于该文件不存在，VersionResourceResolver 尝试去掉版本号 1.0.0，然后再次查找 <code>classpath:/static/style.css</code>，找到文件，直接返回。</p>
+<h2 id="4-1-2-使用-MD5-作为版本号"><a href="#4-1-2-使用-MD5-作为版本号" class="headerlink" title="4.1.2 使用 MD5 作为版本号"></a>4.1.2 使用 MD5 作为版本号</h2><p>除了指定版本号，也可以使用资源的 MD5 作为其版本号，配置方法为：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">"/static/**"</span>)</span><br><span class="line">                .addResourceLocations(<span class="string">"classpath:/static/"</span>)</span><br><span class="line">                .resourceChain(<span class="keyword">false</span>)</span><br><span class="line">                .addResolver(<span class="keyword">new</span> VersionResourceResolver()</span><br><span class="line">                    .addContentVersionStrategy(<span class="string">"/**"</span>));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这样，请求资源时，加上资源的 md5，即 <code>http://localhost:8080/static/style-dfbe630979d120fe54a50593f2621225.css</code> 也可正确访问。</p>
+<p>由于使用资源的 MD5 作为版本号，是 VersionResourceResolver 的其中一种策略，因此与指定版本号的处理方式相同，不再阐述。</p>
+<h2 id="4-2-gzip-压缩"><a href="#4-2-gzip-压缩" class="headerlink" title="4.2 gzip 压缩"></a>4.2 gzip 压缩</h2><p>很多时候，为了降低传输的数据量，可以对资源进行压缩。比如可以将 style.css 压缩成 style.css.gz，但是如何让 Spring MVC 在处理对 style.css 的请求时能正确返回 style.css.gz 呢？</p>
+<p>为了解决这个问题，我们可以继续添加一个 Resource Resolver —— GzipResourceResolver。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/11e15667-ecca-47be-9168-f28a3f5fe170.png" alt="图片"> </p>
+<p>GzipResourceResolver 用来查找资源的压缩版本，它首先使用下一个 Resource Resolver 查找资源，如果可以找到，则再尝试查找该资源的 gzip 版本。如果存在 gzip 版本则返回 gzip 版本的资源，否则返回非 gzip 版本的资源。</p>
+<p>比如对于如下的资源：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static</span><br><span class="line">    └─ style.css</span><br><span class="line">    └─ style<span class="selector-class">.css</span><span class="selector-class">.gz</span> (使用 gzip 压缩)</span><br></pre></td></tr></table></figure>
+<p>在请求 <code>/static/style.css</code> 时，会先使用 PathResourceResolver 查找 style.css，找到后则再次查找 style.css.gz。这里该文件是存在的，因此会返回 style.css.gz 的内容。</p>
+<p><strong>PS： 请求头中的 Content-Encoding 要包含 gzip</strong></p>
+<p>配置 GzipResourceResolver 很简单：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">   registry.addResourceHandler(<span class="string">"/static/**"</span>)</span><br><span class="line">           .addResourceLocations(<span class="string">"classpath:/static/"</span>)</span><br><span class="line">           .resourceChain(<span class="keyword">false</span>)</span><br><span class="line">           .addResolver(<span class="keyword">new</span> GzipResourceResolver())</span><br><span class="line">           .addResolver(<span class="keyword">new</span> VersionResourceResolver().addContentVersionStrategy(<span class="string">"/**"</span>))；</span><br><span class="line">           </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-3-chain-cache"><a href="#4-3-chain-cache" class="headerlink" title="4.3 chain cache"></a>4.3 chain cache</h2><p>从上面的情况可以看出，Spring MVC 会对资源进行较多的处理。如果每一次请求都做这些处理，无疑会降低服务器的性能。为了避免这种情况，这时可以添加 CachingResourceResolver 来解决这种问题。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/7524d593-6b09-4ecc-9d4e-873b12c353f1.png" alt="图片"> </p>
+<p>CachingResourceResolver 用于缓存其它 Resource Resolver 查找到的资源。因此 CachingResourceResolver 会被放在最外层。请求先到达 CachingResourceResolver，尝试在缓存中查找，如果找到，则直接返回，如果找不到，则依次调用后面的 resolver，直到有一个 resolver 能够找到资源，CachingResourceResolver 将找到的资源缓存起来，下次请求同样的资源时，就可以从缓存中取了。</p>
+<p>可能有人会担心缓存资源会占用太多的内存。但实际上并没有资源内容，仅仅是对资源的路径（或者说资源的抽象）进行了缓存。</p>
+<p>开启缓存的方法很简单：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.requestChain(<span class="literal">true</span>)</span><br></pre></td></tr></table></figure>
+<p>前面的例子中都选择关闭 chain cache，原因是缓存的存在会增加调试的难度。因此开发时可以考虑关闭该功能。</p>
+<h2 id="4-4-省略-webjar-版本"><a href="#4-4-省略-webjar-版本" class="headerlink" title="4.4 省略 webjar 版本"></a>4.4 省略 webjar 版本</h2><p><code>AbstractResourceResolver</code> 的子类一共有 5 个，我们已经提到了 4 个。最后一个是 WebJarsResourceResolver。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/3e58d9a3-c418-4db5-83e9-5759ba856650.png" alt="图片"> </p>
+<p>WebJarsResourceResolver 并不需要手动添加。WebJarsResourceResolver 依赖了 <code>webjars-locator</code> 包，因此当添加了 <code>webjars-locator</code> 依赖时，Spring MVC 会自动添加 WebJarsResourceResolver。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.webjars<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>webjars-locator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.32<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>WebJarsResourceResolver 的作用是可以省略 webjar 的版本。比如对于请求 <code>http://localhost:8080/webjars/jquery/3.1.0/jquery.js</code> 省略版本号 3.1.10 直接使用 <code>http://localhost:8080/webjars/jquery/jquery.js</code> 也可访问。</p>
+<p>至此所有 Spring MVC 提供的 ResourceResolver 都讲完了。Spring MVC 提供的这 4 个 ResourceResolver 基本够用，如果不能满足业务需求，也可以自定义 ResourceResolver 来满足需求。</p>
+<h2 id="4-5-Transformer"><a href="#4-5-Transformer" class="headerlink" title="4.5 Transformer"></a>4.5 Transformer</h2><p>实际上，除了 ResourceResolver，Spring MVC 还支持修改资源内容，即 Resource Transformer。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/a33bf0d8-1c6c-4d72-b45f-2318d75e6a1c.png" alt="图片"> </p>
+<p>可用的 Resource Transformer 有以下几个：</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/ec68ef1e-e17a-4021-bbd6-3698538b164f.png" alt="图片"> </p>
+<p>他们的功能依次为：</p>
+<ul>
+<li><strong>AppCacheManifestTransformer:</strong> 帮助处理 HTML5 离线应用的 AppCache 清单内的文件  </li>
+<li><strong>CachingResourceTransformer:</strong> 缓存其它 transfomer 的结果，作用同 <code>CachingResourceResolver</code>  </li>
+<li><strong>CssLinkResourceTransformer:</strong> 处理 css 文件中的链接，为其加上版本号  </li>
+<li><strong>ResourceTransformerSupport:</strong> 抽象类，自定义 transfomer 时继承  </li>
+</ul>
+<p>我们拿 CssLinkResourceTransformer 举例。 它会将 css 文件中的 @import 或 url() 函数中的资源路径自动转换为包含版本号的路径。</p>
+<p>配置方法为：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">registry.addResourceHandler(<span class="string">"/static/**"</span>)</span><br><span class="line">                .addResourceLocations(<span class="string">"classpath:/static/"</span>)</span><br><span class="line">                .resourceChain(<span class="literal">false</span>)</span><br><span class="line">                .addResolver(<span class="keyword">new</span> <span class="type">VersionResourceResolver</span>().addContentVersionStrategy(<span class="string">"/**"</span>))</span><br><span class="line">                .addTransformer(<span class="keyword">new</span> <span class="type">CssLinkResourceTransformer</span>());</span><br></pre></td></tr></table></figure>
+<p>当我们在 style.css 中通过 <code>@import &quot;style-other.css&quot;;</code> 导入了另一个 css 文件，则 transformer 会自动将该 style.css 内部的 css 文件路径地址转换为： <code>@import &quot;style-other-d41d8cd98f00b204e9800998ecf8427e.css&quot;</code></p>
+<h2 id="4-6-Http-缓存"><a href="#4-6-Http-缓存" class="headerlink" title="4.6 Http 缓存"></a>4.6 Http 缓存</h2><p>为了避免客户端重复获取资源，<code>HTTP/1.1</code> 规范中定义了 <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=zh-cn#cache-control" target="_blank" rel="external">Cache-Control</a> 头。几乎所有浏览器都实现了支持 <code>Cache-Control</code>。</p>
+<p>配置方法如下：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line"><span class="meta">public</span> void addResourceHandlers(ResourceHandlerRegistry registry) &#123;</span><br><span class="line">   registry.addResourceHandler(<span class="string">"/static/**"</span>)</span><br><span class="line"><span class="meta">           .addResourceLocations</span>(<span class="string">"classpath:/static/"</span>)</span><br><span class="line"><span class="meta">           .setCacheControl</span>(CacheControl</span><br><span class="line"><span class="meta">                   .maxAge</span>(<span class="number">10</span>, TimeUnit.MINUTES)</span><br><span class="line"><span class="meta">                   .cachePrivate</span>())<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当请求 <code>/static/style.css</code> 时，返回的头信息中会多两条信息：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Cache</span>-Control:<span class="keyword">max</span>-age=<span class="number">600</span>, <span class="keyword">private</span></span><br><span class="line"><span class="keyword">Last</span>-Modified:Sun, <span class="number">04</span> <span class="keyword">Oct</span> <span class="number">2016</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">22</span> GMT</span><br></pre></td></tr></table></figure>
+<p>浏览器会将该信息连同资源储存起来，当再次请求该资源时，会取出 Last-Modified 并添加到在请求头 If-Modified-Since 中：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">If-Modified-Since</span><span class="selector-pseudo">:Sun</span>, 04 <span class="selector-tag">Oct</span> 2016 15<span class="selector-pseudo">:08</span><span class="selector-pseudo">:22</span> <span class="selector-tag">GMT</span></span><br></pre></td></tr></table></figure>
+<p>Spring MVC 在收到请求，发现存在 <code>If-Modified-Since</code>，会提取出来该值，并与资源的修改时间比较，如果发现没有改变，则仅仅返回状态码 304，无需传递资源内容。浏览器收到状态码 304，明白资源从上次请求到现在未被改变，http 缓存依旧可用。</p>
+<p>http 缓存的更多用法参见 <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=zh-cn#cache-control" target="_blank" rel="external">这里</a>。</p>
+<h1 id="5-使用-Spring-Boot-配置"><a href="#5-使用-Spring-Boot-配置" class="headerlink" title="5. 使用 Spring Boot 配置"></a>5. 使用 Spring Boot 配置</h1><p>众所周知，使用 Spring MVC 搭建 Web 服务，不仅要编写不少的代码或 XML 配置，如果开发人员使用不同的 IDE，还要配置这些 IDE 使其得以被正确运行。</p>
+<p>为了解决这些问题，<a href="https://spring.io/" target="_blank" rel="external">spring.io</a> 平台提供了 Spring Boot。Spring Boot 采用 <a href="https://zh.wikipedia.org/wiki/%E7%BA%A6%E5%AE%9A%E4%BC%98%E4%BA%8E%E9%85%8D%E7%BD%AE" target="_blank" rel="external">约定优于配置</a> 的理念，在整合已有的 Spring 组件的同时，提供了大量的默认配置。得益于这些默认配置，使用 Spring Boot，只需要编写一个 pom.xml，再加上一个 java 类，就可以跑起来一个 web 服务，如果使用 groovy，一个类文件就能跑起来 web 服务。正是由于 spring boot 带来的这种便捷的特性，被广泛应用在微服务的场景中。</p>
+<p>现在，Spring Boot 已经非常成熟了，最好的教程当然是<a href="http://projects.spring.io/spring-boot/" target="_blank" rel="external">官方文档</a>。</p>
+<p>项目的创建可以为普通 maven 项目，当然还可以使用 spring.io 提供的 <a href="https://start.spring.io/" target="_blank" rel="external">在线创建 Spring Boot 项目</a> 的服务创建简项目或者。当然，也可以查看本文的示例代码。</p>
+<p><strong>强烈推荐</strong> 看下 <a href="http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/WebMvcAutoConfiguration.html" target="_blank" rel="external">WebMvcAutoConfiguration</a> 这个类，它为 Spring Boot 提供了大量的 Web 服务的默认配置。这些配置包括但不局限于：设置了主页、webjars配置、静态资源位置等。这些配置对于我们使用配置 Web 服务很有借鉴意义。</p>
+<p><strong>ps: 想要使用默认配置，无需使用 @EnaleWebMvc 注解。使用了 @EnableWebMvc 注解后 WebMvcAutoConfiguration 提供的默认配置会失效，必须提供全部配置。</strong></p>
+<p>最后，我们使用 spring boot 提供的编写配置文件的方式，实现上面使用代码才能完成的功能。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># application.properties</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置静态资源的存放地址</span></span><br><span class="line">spring.resources.<span class="attribute">static-locations</span>=classpath:/resources </span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启 chain cache</span></span><br><span class="line">spring.resources.chain.<span class="attribute">cache</span>=<span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启 gzip</span></span><br><span class="line">spring.resources.chain.<span class="attribute">gzipped</span>=<span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定版本号</span></span><br><span class="line">spring.resources.chain.strategy.fixed.<span class="attribute">enabled</span>=<span class="literal">true</span></span><br><span class="line">spring.resources.chain.strategy.fixed.<span class="attribute">paths</span>=/static  </span><br><span class="line">spring.resources.chain.strategy.fixed.<span class="attribute">version</span>=1.0.0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 MD5 作为版本号</span></span><br><span class="line">spring.resources.chain.strategy.content.<span class="attribute">enable</span>=<span class="literal">true</span></span><br><span class="line">spring.resources.chain.strategy.content.<span class="attribute">paths</span>=/**</span><br><span class="line"></span><br><span class="line"><span class="comment"># http 缓存过期时间</span></span><br><span class="line">spring.resources.<span class="attribute">cachePeriod</span>=60</span><br></pre></td></tr></table></figure>
+<p>最后介绍一下如何查看这些配置的技巧：</p>
+<p>通过查看 <a href="https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ResourceProperties.java" target="_blank" rel="external">ResourceProperties</a> 这个类可以看到，该类顶部有一个注解 <code>@ConfigurationProperties(prefix = &quot;spring.resources&quot;, ignoreUnknownFields = false)</code>。</p>
+<p>ConfigurationProperties 是用来注入值的，<code>prefix = &quot;spring.resources&quot;</code> 表示前缀。比如我们配置文件中的 <code>spring.resources.static-locations=classpath:/resources</code> 这个配置，去掉 <code>spring.resources</code> 这个前缀，剩下的为 <code>static-locations</code> ，则它的值 <code>classpath:/resources</code> 会被注入到 ConfigurationProperties 类的 staticLocations 成员变量中。通过这种方法，我们就能通过编写配置文件改变类的状态而无需编写代码。当然，如何使用这些配置的关键还是要知道这些成员变量的作用。</p>
+<h1 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h1><p>本文从一个新的技术点 webjars 出发，探讨了 Spring MVC 对静态资源的处理，紧接着又了解了 Spring Boot 的配置技巧。</p>
+<p>示例代码：<a href="https://code.csdn.net/tanheaishui/webjartest/repository/archive?ref=master" target="_blank" rel="external">下载</a></p>
+<h1 id="7-参考"><a href="#7-参考" class="headerlink" title="7. 参考"></a>7. 参考</h1><p><a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=zh-cn#cache-control" target="_blank" rel="external">https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=zh-cn#cache-control</a><br><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-config-static-resources" target="_blank" rel="external">http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-config-static-resources</a><br><a href="http://qiita.com/kazuki43zoo/items/e12a72d4ac4de418ee37" target="_blank" rel="external">http://qiita.com/kazuki43zoo/items/e12a72d4ac4de418ee37</a><br><a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc-static-content" target="_blank" rel="external">http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc-static-content</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    tanhe123
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2016/10/12/spring-static-resource-process/" title="深入 Spring 系列之静态资源处理">http://yoursite.com/2016/10/12/spring-static-resource-process/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag"># spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/05/git-implement/" rel="next" title="使用原理视角看 Git">
+                <i class="fa fa-chevron-left"></i> 使用原理视角看 Git
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/20/spring-mvc-cors/" rel="prev" title="Spring MVC 与 CORS">
+                Spring MVC 与 CORS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/uploads/avatar.jpg"
+              alt="tanhe123" />
+          
+            <p class="site-author-name" itemprop="name">tanhe123</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-背景"><span class="nav-number">1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-预备知识"><span class="nav-number">2.</span> <span class="nav-text">2. 预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Servlet-3"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 Servlet 3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Spring-MVC"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 Spring MVC</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-基础"><span class="nav-number">3.</span> <span class="nav-text">3. 基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-进阶"><span class="nav-number">4.</span> <span class="nav-text">4. 进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-为静态资源添加版本号"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 为静态资源添加版本号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-1-指定版本号"><span class="nav-number">4.2.</span> <span class="nav-text">4.1.1 指定版本号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-2-使用-MD5-作为版本号"><span class="nav-number">4.3.</span> <span class="nav-text">4.1.2 使用 MD5 作为版本号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-gzip-压缩"><span class="nav-number">4.4.</span> <span class="nav-text">4.2 gzip 压缩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-chain-cache"><span class="nav-number">4.5.</span> <span class="nav-text">4.3 chain cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-省略-webjar-版本"><span class="nav-number">4.6.</span> <span class="nav-text">4.4 省略 webjar 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-Transformer"><span class="nav-number">4.7.</span> <span class="nav-text">4.5 Transformer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-Http-缓存"><span class="nav-number">4.8.</span> <span class="nav-text">4.6 Http 缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用-Spring-Boot-配置"><span class="nav-number">5.</span> <span class="nav-text">5. 使用 Spring Boot 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-总结"><span class="nav-number">6.</span> <span class="nav-text">6. 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-参考"><span class="nav-number">7.</span> <span class="nav-text">7. 参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tanhe123</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://tanhe123.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2016/10/12/spring-static-resource-process/';
+          this.page.identifier = '2016/10/12/spring-static-resource-process/';
+          this.page.title = '深入 Spring 系列之静态资源处理';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://tanhe123.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.2"></script>
+
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring,CORS," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tanhe123's blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="1. CORS 简介同源策略（same origin policy）是浏览器安全的基石。在同源策略的限制下，非同源的网站之间不能发送 ajax 请求的。 为了解决这个问题，w3c 提出了跨源资源共享，即 CORS(Cross-Origin Resource Sharing)。 CORS 做到了两点：  不破坏即有规则 服务器实现了 CORS 接口，就可以跨源通信  基于这两点，CORS 将请求分为">
+<meta name="keywords" content="spring,CORS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MVC 与 CORS">
+<meta property="og:url" content="http://yoursite.com/2016/12/20/spring-mvc-cors/index.html">
+<meta property="og:site_name" content="tanhe123&#39;s blog">
+<meta property="og:description" content="1. CORS 简介同源策略（same origin policy）是浏览器安全的基石。在同源策略的限制下，非同源的网站之间不能发送 ajax 请求的。 为了解决这个问题，w3c 提出了跨源资源共享，即 CORS(Cross-Origin Resource Sharing)。 CORS 做到了两点：  不破坏即有规则 服务器实现了 CORS 接口，就可以跨源通信  基于这两点，CORS 将请求分为">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/30106795-badd-48f2-93b1-cd834b94fc18.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/797a0630-a8f9-416f-9fd5-b3b88fd34b36.png">
+<meta property="og:image" content="https://dn-coding-net-production-pp.qbox.me/6c385f02-3c25-4734-9613-792ccef80b15.png">
+<meta property="og:updated_time" content="2017-11-12T10:56:11.246Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring MVC 与 CORS">
+<meta name="twitter:description" content="1. CORS 简介同源策略（same origin policy）是浏览器安全的基石。在同源策略的限制下，非同源的网站之间不能发送 ajax 请求的。 为了解决这个问题，w3c 提出了跨源资源共享，即 CORS(Cross-Origin Resource Sharing)。 CORS 做到了两点：  不破坏即有规则 服务器实现了 CORS 接口，就可以跨源通信  基于这两点，CORS 将请求分为">
+<meta name="twitter:image" content="https://dn-coding-net-production-pp.qbox.me/30106795-badd-48f2-93b1-cd834b94fc18.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":true,"onmobile":true},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/20/spring-mvc-cors/"/>
+
+
+
+
+
+  <title>Spring MVC 与 CORS | tanhe123's blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e2d9319170688f57c5ef5cd659a8092c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tanhe123's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/20/spring-mvc-cors/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tanhe123">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tanhe123's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring MVC 与 CORS</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-20T09:12:00+08:00">
+                2016-12-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index">
+                    <span itemprop="name">spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/20/spring-mvc-cors/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/12/20/spring-mvc-cors/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-CORS-简介"><a href="#1-CORS-简介" class="headerlink" title="1. CORS 简介"></a>1. CORS 简介</h2><p>同源策略（same origin policy）是浏览器安全的基石。在同源策略的限制下，<strong>非同源的网站之间不能发送 ajax 请求的</strong>。</p>
+<p>为了解决这个问题，w3c 提出了跨源资源共享，即 CORS(<a href="https://www.w3.org/TR/cors/" target="_blank" rel="external">Cross-Origin Resource Sharing</a>)。</p>
+<p>CORS 做到了两点：</p>
+<ol>
+<li>不破坏即有规则</li>
+<li>服务器实现了 CORS 接口，就可以跨源通信</li>
+</ol>
+<p>基于这两点，CORS 将请求分为两类：简单请求和非简单请求。</p>
+<a id="more"></a>
+<h3 id="1-1-简单请求"><a href="#1-1-简单请求" class="headerlink" title="1.1 简单请求"></a>1.1 简单请求</h3><p>可以先看下 CORS 出现前的情况：跨源时能够通过 script 或者 image 标签触发 GET 请求或通过表单发送一条 POST 请求，但这两种请求 HTTP 头信息中都不能包含任何自定义字段。</p>
+<p>简单请求对应该规则，因此对简单请求的定义为：</p>
+<p>请求方法是 <code>HEAD</code>、<code>GET</code> 或 <code>POST</code> 且 HTTP 头信息不超过以下几个字段：<code>Accept</code>、<code>Accept-Language</code>、<code>Content-Language</code>、<code>Last-Event-ID</code>、<code>Content-Type</code>（只限于 <code>application/x-www-form-urlencoded</code>、<code>multipart/form-data</code>、<code>text/plain</code>）。</p>
+<p>比如有一个简单请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/test</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Accept</span>: */*</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate, sdch, br</span><br><span class="line"><span class="attribute">Origin</span>: http://www.examples.com</span><br><span class="line"><span class="attribute">Host</span>: www.examples.com</span><br></pre></td></tr></table></figure>
+<p>对于这样的简单请求，CORS 的策略是请求时，<strong>在头信息中添加一个 Origin 字段</strong>，服务器收到请求后，根据该字段判断是否允许该请求。</p>
+<ol>
+<li>如果允许，则在 HTTP 头信息中添加 <code>Access-Control-Allow-Origin</code> 字段，并返回正确的结果</li>
+<li>如果不允许，则不在头信息中添加 <code>Access-Control-Allow-Origin</code> 字段。</li>
+</ol>
+<p>浏览器先于用户得到返回结果，根据有无 <code>Access-Control-Allow-Origin</code> 字段来决定是否拦截该返回结果。</p>
+<p>对于 CORS 出现前的一些服务，CORS 对他们的影响分两种情况：</p>
+<ol>
+<li>script 或者 image 触发的 GET 请求不包含 Origin 头，所以不受到 CORS 的限制，依旧可用。</li>
+<li>如果是 ajax 请求，HTTP 头信息中会包含 Origin 字段，由于服务器没有做任何配置，所以返回结果不会包含 <code>Access-Control-Allow-Origin</code>，因此返回结果会被浏览器拦截，接口依旧不可以被 ajax 跨源访问。</li>
+</ol>
+<p>可以看出，CORS 的出现，没有对”旧的“服务造成任何影响。</p>
+<p>另外，除了提到的 <code>Access-Control-Allow-Origin</code> 还有几个字段用于描述 CORS 返回结果：</p>
+<ol>
+<li>Access-Control-Allow-Credentials: 可选，用户是否可以发送、处理 cookie。</li>
+<li>Access-Control-Expose-Headers：可选，可以让用户拿到的字段。有几个字段无论设置与否都可以拿到的，包括：Cache-Control、Content-Language、Content-Type、Expires、Last-Modified、Pragma。</li>
+</ol>
+<h3 id="1-2-非简单请求"><a href="#1-2-非简单请求" class="headerlink" title="1.2 非简单请求"></a>1.2 非简单请求</h3><p>除了简单请求之外的请求，就是非简单请求。</p>
+<p>对于非简单请求的跨源请求，<strong>浏览器会在真实请求发出前</strong>，增加一次 OPTION 请求，称为预检请求（preflight request）。预检请求将真实请求的信息，包括请求方法、自定义头字段、源信息添加到 HTTP 头信息字段中，询问服务器是否允许这样的操作。</p>
+<p>比如对于 <code>DELETE</code> 请求：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">OPTIONS /test HTTP/<span class="number">1.1</span></span><br><span class="line">Origin: http:<span class="comment">//www.examples.com</span></span><br><span class="line">Access-Control-Request-<span class="function"><span class="keyword">Method</span>:</span> DELETE</span><br><span class="line">Access-Control-Request-Headers: X-Custom-Header</span><br><span class="line">Host: www.examples.com</span><br></pre></td></tr></table></figure>
+<p>与 CORS 相关的字段有：</p>
+<ol>
+<li><code>Access-Control-Request-Method</code>: 真实请求使用的 HTTP 方法。</li>
+<li><code>Access-Control-Request-Headers</code>: 真实请求中包含的自定义头字段。</li>
+</ol>
+<p>服务器收到请求时，需要分别对 Origin、Access-Control-Request-Method、Access-Control-Request-Headers 进行验证，验证通过后，会在返回 Http 头信息中添加</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Access-Control-Allow-<span class="string">Origin:</span> <span class="string">http:</span><span class="comment">//www.examples.com</span></span><br><span class="line">Access-Control-Allow-<span class="string">Methods:</span> GET, POST, PUT, DELETE</span><br><span class="line">Access-Control-Allow-<span class="string">Headers:</span> X-Custom-Header</span><br><span class="line">Access-Control-Allow-<span class="string">Credentials:</span> <span class="literal">true</span></span><br><span class="line">Access-Control-Max-<span class="string">Age:</span> <span class="number">1728000</span></span><br></pre></td></tr></table></figure>
+<p>他们的含义分别是：</p>
+<ol>
+<li>Access-Control-Allow-Methods: 真实请求允许的方法</li>
+<li>Access-Control-Allow-Headers: 服务器允许使用的字段</li>
+<li>Access-Control-Allow-Credentials: 是否允许用户发送、处理 cookie</li>
+<li>Access-Control-Max-Age: 预检请求的有效期，单位为秒。有效期内，不会重复发送预检请求</li>
+</ol>
+<p>当预检请求通过后，浏览器会发送真实请求到服务器。这就实现了跨源请求。</p>
+<p>了解完 CORS，接下来我们来搭建简单的 Spring MVC 服务，并进一步了解 Spring MVC 如何配置 CORS。</p>
+<h2 id="2-Spring-MVC-环境搭建"><a href="#2-Spring-MVC-环境搭建" class="headerlink" title="2. Spring MVC 环境搭建"></a>2. Spring MVC 环境搭建</h2><p>打开 <a href="http://start.spring.io/" target="_blank" rel="external">http://start.spring.io/</a>，添加 Web Dependency，然后选择 Generate Project，下载 zip 文件，就得到了一个 spring boot demo。</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/30106795-badd-48f2-93b1-cd834b94fc18.png" alt="图片"> </p>
+<p>解压 zip 文件，双击 pom.xml 打开或用 IDEA、Eclipse 将项目按照 maven 导入。</p>
+<p>根据 Group、Artifact、Dependencies 填写的不同，项目目录结构可能有些许差别，我的项目结构如下：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">├── src</span><br><span class="line">│   ├── main/java</span><br><span class="line">│   <span class="string">|        └── net/xiayule/spring/cors</span></span><br><span class="line">│   <span class="string">|            └── SpringBootCorsTestApplication.java</span></span><br><span class="line"><span class="string">|   └── resources</span></span><br><span class="line"><span class="string">|       ├── static</span></span><br><span class="line"><span class="string">|       ├── templates</span></span><br><span class="line"><span class="string">|       └── application.properties</span></span><br><span class="line"><span class="string">|    </span></span><br><span class="line">└── pom.xml</span><br></pre></td></tr></table></figure>
+<p>我们需要关心的只有 SpringBootCorsTestApplication.java。在 SpringBootCorsTestApplication.java 添加以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringBootCorsTestApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/test"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">greetings</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"&#123;\"project\":\"just a test\"&#125;"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		SpringApplication.run(SpringBootCorsTestApplication.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>@RequestMapping(value = &quot;/test&quot;)</code> 的含义是该方法接受来自 <code>/test</code> 的请求，并且提供了对 HTTP 的 GET、POST、DELETE 等方法的支持。</p>
+<p>运行项目的方法为，在项目根目录执行 <code>mvn spring-boot:run</code> 启动应用，打开浏览器访问 <code>http://localhost:8080</code> 即可看到效果：</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/797a0630-a8f9-416f-9fd5-b3b88fd34b36.png" alt="图片"> </p>
+<p>后端服务搭建好了，接着实现前端。为了简单，直接创建一个 test.html 文件，添加以下内容：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Hello CORS<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">        $(<span class="built_in">document</span>).ready(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            $.ajax(&#123;</span></span><br><span class="line"><span class="actionscript">                url: <span class="string">"http://localhost:8080/test"</span>,</span></span><br><span class="line"><span class="actionscript">                method: <span class="string">"POST"</span>,</span></span><br><span class="line"><span class="actionscript">                contentType: <span class="string">"application/json; charset=utf-8"</span></span></span><br><span class="line"><span class="actionscript">            &#125;).then(<span class="function"><span class="keyword">function</span><span class="params">(data, status, jqxhr)</span> </span>&#123;</span></span><br><span class="line"><span class="undefined">                alert(data)</span></span><br><span class="line"><span class="undefined">            &#125;);</span></span><br><span class="line"><span class="undefined">        &#125;);</span></span><br><span class="line"><span class="undefined">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>使用浏览器打开该文件，就会触发一条向 <code>http://localhost:8080</code> 的请求。可以通过修改上面代码的 method，来触发不同类型的请求。</p>
+<p>由于是直接使用浏览器打开，<strong>网页的源为 null</strong>, 当向源 <code>http://localhost:8080</code> 请求时，就变成了跨源请求，因此如果后端不加 CORS 的配置，返回的 HTTP 头信息中不会包含 <code>Access-Control-Allow-Origin</code>，因此浏览器会报出如下错误：</p>
+<p> <img src="https://dn-coding-net-production-pp.qbox.me/6c385f02-3c25-4734-9613-792ccef80b15.png" alt="图片"> </p>
+<h2 id="3-配置-CORS"><a href="#3-配置-CORS" class="headerlink" title="3. 配置 CORS"></a>3. 配置 CORS</h2><p>一个应用可能会有多个 CORS 配置，并且可以设置每个 CORS 配置针对一个接口或一系列接口或者对所有接口生效。</p>
+<p>举例来说，我们需要：</p>
+<ol>
+<li>让 /test 接口支持跨源访问，而 /test/1 或 /api 等其它接口不支持跨源访问</li>
+<li>让 /test/* 这一类接口支持跨源访问，而 /api 等其它接口不支持跨源访问</li>
+<li>站点所有的接口都支持跨源访问</li>
+</ol>
+<p>对第一种情况，如果想要对某一接口配置 CORS，可以在方法上添加 CrossOrigin 注解：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CrossOrigin(origins = &#123;<span class="meta-string">"http://localhost:9000"</span>, <span class="meta-string">"null"</span>&#125;)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = <span class="meta-string">"/test"</span>, method = RequestMethod.GET)</span></span><br><span class="line"><span class="keyword">public</span> String greetings() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;\"project\":\"just a test\"&#125;"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二种情况，如果想对一系列接口添加 CORS 配置，可以在类上添加注解，对该类声明所有接口都有效：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">CrossOrigin</span>(origins = &#123;"<span class="attribute">http</span>:<span class="comment">//localhost:9000", "null"&#125;)</span></span><br><span class="line"><span class="variable">@RestController</span></span><br><span class="line"><span class="variable">@SpringBootApplication</span></span><br><span class="line">public class SpringBootCorsTestApplication &#123;</span><br><span class="line">    <span class="comment">// xxx</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第三种情况，添加全局配置，则需要添加一个配置类：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class WebConfig extends WebMvcConfigurerAdapter &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void addCorsMappings(CorsRegistry registry) &#123;</span><br><span class="line">		registry.addMapping(<span class="string">"/**"</span>)</span><br><span class="line">				.allowedOrigins(<span class="string">"http://localhost:9000"</span>, <span class="string">"null"</span>)</span><br><span class="line">				.allowedMethods(<span class="string">"<span class="keyword">POST</span>"</span>, <span class="string">"<span class="keyword">GET</span>"</span>, <span class="string">"<span class="keyword">PUT</span>"</span>, <span class="string">"<span class="keyword">OPTIONS</span>"</span>, <span class="string">"<span class="keyword">DELETE</span>"</span>)</span><br><span class="line">				.maxAge(<span class="number">3600</span>)</span><br><span class="line">				.allowCredentials(true);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，还可以通过添加 Filter 的方式，配置 CORS 规则，并手动指定对哪些接口有效。</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@<span class="keyword">Bean</span></span><br><span class="line"><span class="keyword">public </span>FilterRegistrationBean corsFilter() &#123;</span><br><span class="line">	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource()<span class="comment">;</span></span><br><span class="line">	CorsConfiguration <span class="built_in">config</span> = new CorsConfiguration()<span class="comment">;</span></span><br><span class="line">	<span class="built_in">config</span>.setAllowCredentials(true)<span class="comment">;	config.addAllowedOrigin("http://localhost:9000");</span></span><br><span class="line">	<span class="built_in">config</span>.<span class="keyword">addAllowedOrigin("null");</span></span><br><span class="line"><span class="keyword">	</span><span class="built_in">config</span>.<span class="keyword">addAllowedHeader("*");</span></span><br><span class="line"><span class="keyword">	</span><span class="built_in">config</span>.<span class="keyword">addAllowedMethod("*");</span></span><br><span class="line"><span class="keyword">	</span>source.registerCorsConfiguration(<span class="string">"/**"</span>, <span class="built_in">config</span>)<span class="comment">; // CORS 配置对所有接口都有效</span></span><br><span class="line">	FilterRegistrationBean <span class="keyword">bean </span>= newFilterRegistrationBean(new CorsFilter(source))<span class="comment">;</span></span><br><span class="line">	<span class="keyword">bean.setOrder(0);</span></span><br><span class="line"><span class="keyword">	</span>return <span class="keyword">bean;</span></span><br><span class="line"><span class="keyword">&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="4-实现剖析"><a href="#4-实现剖析" class="headerlink" title="4. 实现剖析"></a>4. 实现剖析</h2><p>无论是通过哪种方式配置 CORS，其实都是在构造 CorsConfiguration。<br>一个 CORS 配置用一个 <code>CorsConfiguration</code> 类来表示，它的定义如下：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> class CorsConfiguration &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">List</span>&lt;<span class="built_in">String</span>&gt; allowedOrigins;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">List</span>&lt;<span class="built_in">String</span>&gt; allowedMethods;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">List</span>&lt;<span class="built_in">String</span>&gt; allowedHeaders;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">List</span>&lt;<span class="built_in">String</span>&gt; exposedHeaders;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">Boolean</span> allowCredentials;</span><br><span class="line">    <span class="keyword">private</span> Long maxAge;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Spring MVC 中对 CORS 规则的校验，都是通过委托给 DefaultCorsProcessor 实现的。</p>
+<p>DefaultCorsProcessor 处理过程如下：</p>
+<ol>
+<li>判断依据是 Header 中是否包含 Origin。如果包含则说明为 CORS 请求，转到 2；否则，说明不是 CORS 请求，不作任何处理。</li>
+<li>判断 response 的 Header 是否已经包含 Access-Control-Allow-Origin，如果包含，证明已经被处理过了, 转到 3，否则不再处理。</li>
+<li>判断是否同源，如果是则转交给负责该请求的类处理</li>
+<li>是否配置了 CORS 规则，如果没有配置，且是预检请求，则拒绝该请求，如果没有配置，且不是预检请求，则交给负责该请求的类处理。如果配置了，则对该请求进行校验。</li>
+</ol>
+<p>校验就是根据 CorsConfiguration 这个类的配置进行判断：</p>
+<ol>
+<li>判断 origin 是否合法</li>
+<li>判断 method 是否合法</li>
+<li>判断 header 是否合法</li>
+<li>如果全部合法，则在 response header 中添加响应的字段，并交给负责该请求的类处理，如果不合法，则拒绝该请求。</li>
+</ol>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h2><p>本文介绍了 CORS 的知识以及如何在 Spring MVC 中配置 CORS。</p>
+<p><a href="https://code.csdn.net/tanheaishui/springbootcorstest/repository/archive?ref=master" target="_blank" rel="external">源码下载</a></p>
+<h2 id="6-参考"><a href="#6-参考" class="headerlink" title="6. 参考"></a>6. 参考</h2><p><a href="https://spring.io/understanding/CORS" target="_blank" rel="external">https://spring.io/understanding/CORS</a><br><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS" target="_blank" rel="external">https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS</a><br><a href="http://stackoverflow.com/questions/8685678/cors-how-do-preflight-an-httprequest" target="_blank" rel="external">http://stackoverflow.com/questions/8685678/cors-how-do-preflight-an-httprequest</a><br><a href="http://stackoverflow.com/questions/15381105/cors-what-is-the-motivation-behind-introducing-preflight-requests" target="_blank" rel="external">http://stackoverflow.com/questions/15381105/cors-what-is-the-motivation-behind-introducing-preflight-requests</a><br><a href="http://stackoverflow.com/questions/39725955/why-is-there-no-preflight-in-cors-for-post-requests-with-standard-content-type" target="_blank" rel="external">http://stackoverflow.com/questions/39725955/why-is-there-no-preflight-in-cors-for-post-requests-with-standard-content-type</a><br><a href="https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy</a><br><a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2016/04/cors.html</a><br><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS</a><br><a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html</a><br><a href="https://spring.io/blog/2015/06/08/cors-support-in-spring-framework" target="_blank" rel="external">https://spring.io/blog/2015/06/08/cors-support-in-spring-framework</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    tanhe123
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2016/12/20/spring-mvc-cors/" title="Spring MVC 与 CORS">http://yoursite.com/2016/12/20/spring-mvc-cors/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag"># spring</a>
+          
+            <a href="/tags/CORS/" rel="tag"># CORS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/12/spring-static-resource-process/" rel="next" title="深入 Spring 系列之静态资源处理">
+                <i class="fa fa-chevron-left"></i> 深入 Spring 系列之静态资源处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/uploads/avatar.jpg"
+              alt="tanhe123" />
+          
+            <p class="site-author-name" itemprop="name">tanhe123</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-CORS-简介"><span class="nav-number">1.</span> <span class="nav-text">1. CORS 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-简单请求"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 简单请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-非简单请求"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 非简单请求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Spring-MVC-环境搭建"><span class="nav-number">2.</span> <span class="nav-text">2. Spring MVC 环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-配置-CORS"><span class="nav-number">3.</span> <span class="nav-text">3. 配置 CORS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-实现剖析"><span class="nav-number">4.</span> <span class="nav-text">4. 实现剖析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-总结"><span class="nav-number">5.</span> <span class="nav-text">5. 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-参考"><span class="nav-number">6.</span> <span class="nav-text">6. 参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tanhe123</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://tanhe123.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2016/12/20/spring-mvc-cors/';
+          this.page.identifier = '2016/12/20/spring-mvc-cors/';
+          this.page.title = 'Spring MVC 与 CORS';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://tanhe123.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.2"></script>
+
+
+  
+
+</body>
+</html>
